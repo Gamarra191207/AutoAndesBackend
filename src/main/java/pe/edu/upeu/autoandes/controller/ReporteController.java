@@ -1,7 +1,6 @@
 package pe.edu.upeu.autoandes.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +23,25 @@ public class ReporteController {
 
     @GetMapping("/ingresos-por-servicio")
     public ResponseEntity<List<IngresoPorServicioDTO>> ingresosPorServicio(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta
+            @RequestParam(required = false) String desde,
+            @RequestParam(required = false) String hasta
     ) {
-        LocalDateTime desdeDateTime = desde != null ? desde.atStartOfDay() : null;
-        LocalDateTime hastaDateTime = hasta != null ? hasta.atTime(LocalTime.MAX) : null;
+        LocalDateTime desdeDateTime = parseFechaInicio(desde);
+        LocalDateTime hastaDateTime = parseFechaFin(hasta);
 
         List<IngresoPorServicioDTO> reporte = reporteService.obtenerIngresosPorServicio(desdeDateTime, hastaDateTime);
         return ResponseEntity.ok(reporte);
+    }
+
+    private LocalDateTime parseFechaInicio(String fechaStr) {
+        if (fechaStr == null || fechaStr.isBlank()) return null;
+        if (fechaStr.contains("T")) return LocalDateTime.parse(fechaStr);
+        return LocalDate.parse(fechaStr).atStartOfDay();
+    }
+
+    private LocalDateTime parseFechaFin(String fechaStr) {
+        if (fechaStr == null || fechaStr.isBlank()) return null;
+        if (fechaStr.contains("T")) return LocalDateTime.parse(fechaStr);
+        return LocalDate.parse(fechaStr).atTime(LocalTime.MAX);
     }
 }
