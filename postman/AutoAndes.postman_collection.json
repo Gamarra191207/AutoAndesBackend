@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "autoandes-api-collection-2026",
+		"name": "AutoAndes API REST - Examen Parcial II",
+		"description": "Colección completa de pruebas para AutoAndes API con casos 200/201, 400, 401, 403, 404 y 409",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "tokenAdmin",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenAsesor",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenJefe",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "01. Auth - Login Admin (200 OK)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Auto2026*\"\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+			}
+		},
+		{
+			"name": "02. Auth - Login Credenciales Inválidas (401 Unauthorized)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"ClaveIncorrecta\"\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+			}
+		},
+		{
+			"name": "03. Auth - Login Usuario Inactivo (401 Unauthorized)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"inactivo\",\n  \"password\": \"Auto2026*\"\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+			}
+		},
+		{
+			"name": "04. Servicios - Listar Servicios (200 OK)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+				],
+				"url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] }
+			}
+		},
+		{
+			"name": "05. Servicios - Registrar Servicio (201 Created)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigo\": \"SRV-009\",\n  \"nombre\": \"Revisión y Limpieza de Frenos ABS\",\n  \"precio\": 110.00,\n  \"duracionMin\": 45,\n  \"activo\": true\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] }
+			}
+		},
+		{
+			"name": "06. Servicios - Validación Formato Código (400 Bad Request)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigo\": \"CODIGO-INVALIDO\",\n  \"nombre\": \"Test Invalido\",\n  \"precio\": -10.00,\n  \"duracionMin\": 5\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] }
+			}
+		},
+		{
+			"name": "07. Servicios - Buscar Inexistente (404 Not Found)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+				],
+				"url": { "raw": "{{baseUrl}}/servicios/999", "host": ["{{baseUrl}}"], "path": ["servicios", "999"] }
+			}
+		},
+		{
+			"name": "08. Servicios - Código Duplicado RN-01 (409 Conflict)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"codigo\": \"SRV-001\",\n  \"nombre\": \"Duplicado de Aceite\",\n  \"precio\": 200.00,\n  \"duracionMin\": 60\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] }
+			}
+		},
+		{
+			"name": "09. Servicios - Eliminar Físicamente en Uso RN-01 (409 Conflict)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+				],
+				"url": { "raw": "{{baseUrl}}/servicios/1", "host": ["{{baseUrl}}"], "path": ["servicios", "1"] }
+			}
+		},
+		{
+			"name": "10. Vehículos - Placa Duplicada RN-02 (409 Conflict)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAsesor}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"placa\": \"AAA-111\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Yaris\",\n  \"anio\": 2021,\n  \"clienteId\": 1\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/vehiculos", "host": ["{{baseUrl}}"], "path": ["vehiculos"] }
+			}
+		},
+		{
+			"name": "11. Órdenes - Registrar Orden Exitosa (201 Created)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAsesor}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"vehiculoId\": 1,\n  \"kilometraje\": 48000,\n  \"detalles\": [\n    {\n      \"servicioId\": 1,\n      \"cantidad\": 1\n    },\n    {\n      \"servicioId\": 2,\n      \"cantidad\": 1\n    }\n  ]\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/ordenes", "host": ["{{baseUrl}}"], "path": ["ordenes"] }
+			}
+		},
+		{
+			"name": "12. Órdenes - Kilometraje Menor RN-04 (409 Conflict)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAsesor}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"vehiculoId\": 1,\n  \"kilometraje\": 40000,\n  \"detalles\": [\n    {\n      \"servicioId\": 1,\n      \"cantidad\": 1\n    }\n  ]\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/ordenes", "host": ["{{baseUrl}}"], "path": ["ordenes"] }
+			}
+		},
+		{
+			"name": "13. Órdenes - Servicio Inactivo RN-03 (409 Conflict)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAsesor}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"vehiculoId\": 2,\n  \"kilometraje\": 35000,\n  \"detalles\": [\n    {\n      \"servicioId\": 8,\n      \"cantidad\": 1\n    }\n  ]\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/ordenes", "host": ["{{baseUrl}}"], "path": ["ordenes"] }
+			}
+		},
+		{
+			"name": "14. Permisos - Asesor Intenta Anular Orden (403 Forbidden)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenAsesor}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"motivo\": \"Intento de anulación por asesor\"\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/ordenes/1/anular", "host": ["{{baseUrl}}"], "path": ["ordenes", "1", "anular"] }
+			}
+		},
+		{
+			"name": "15. Permisos - Jefe Intenta Registrar Orden (403 Forbidden)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenJefe}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"vehiculoId\": 1,\n  \"kilometraje\": 50000,\n  \"detalles\": [\n    { \"servicioId\": 1, \"cantidad\": 1 }\n  ]\n}"
+				},
+				"url": { "raw": "{{baseUrl}}/ordenes", "host": ["{{baseUrl}}"], "path": ["ordenes"] }
+			}
+		},
+		{
+			"name": "16. Reportes - Ingresos por Servicio (200 OK)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "Authorization", "value": "Bearer {{tokenJefe}}" }
+				],
+				"url": { "raw": "{{baseUrl}}/reportes/ingresos-por-servicio", "host": ["{{baseUrl}}"], "path": ["reportes", "ingresos-por-servicio"] }
+			}
+		}
+	]
+}
