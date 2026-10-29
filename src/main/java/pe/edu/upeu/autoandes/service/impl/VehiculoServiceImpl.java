@@ -51,13 +51,11 @@ public class VehiculoServiceImpl implements VehiculoService {
     public VehiculoResponseDTO crear(VehiculoRequestDTO dto) {
         String placaNorm = dto.getPlaca().trim().toUpperCase();
 
-        // RN-02: La placa es única (409)
         if (vehiculoRepository.existsByPlaca(placaNorm)) {
             log.warn("RN-02 rechazada: La placa '{}' ya se encuentra registrada", placaNorm);
             throw new ReglaNegocioException("La placa ya se encuentra registrada: " + placaNorm);
         }
 
-        // RN-02: El cliente debe existir (404)
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Cliente no encontrado con id: " + dto.getClienteId()));
 
@@ -75,13 +73,11 @@ public class VehiculoServiceImpl implements VehiculoService {
 
         String placaNorm = dto.getPlaca().trim().toUpperCase();
 
-        // RN-02: La placa es única (409)
         if (vehiculoRepository.existsByPlacaAndIdNot(placaNorm, id)) {
             log.warn("RN-02 rechazada: La placa '{}' ya pertenece a otro vehículo", placaNorm);
             throw new ReglaNegocioException("La placa ya se encuentra registrada: " + placaNorm);
         }
 
-        // RN-02: El cliente debe existir (404)
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Cliente no encontrado con id: " + dto.getClienteId()));
 
@@ -101,7 +97,6 @@ public class VehiculoServiceImpl implements VehiculoService {
         Vehiculo vehiculo = vehiculoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Vehículo no encontrado con id: " + id));
 
-        // RN-02: Un vehículo con órdenes registradas no se puede eliminar (409)
         if (ordenServicioRepository.existsByVehiculoId(id)) {
             log.warn("RN-02 rechazada: Intento de eliminar vehículo ID={} con órdenes asociadas", id);
             throw new ReglaNegocioException("El vehículo tiene órdenes de servicio registradas y no se puede eliminar.");
