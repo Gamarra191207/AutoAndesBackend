@@ -63,41 +63,32 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Peticiones OPTIONS para preflight de CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // Rutas publicas: Login y documentacion OpenAPI
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-                        // Perfil de usuario autenticado
                         .requestMatchers("/api/v1/auth/me").authenticated()
 
-                        // Clientes
                         .requestMatchers(HttpMethod.GET, "/api/v1/clientes/**").hasAuthority("VEHICULO_LEER")
 
-                        // Servicios
                         .requestMatchers(HttpMethod.GET, "/api/v1/servicios/**").hasAuthority("SERVICIO_LEER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/servicios").hasAuthority("SERVICIO_ESCRIBIR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/servicios/**").hasAuthority("SERVICIO_ESCRIBIR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/servicios/**").hasAuthority("SERVICIO_ESCRIBIR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/servicios/*/estado").hasAuthority("SERVICIO_ESCRIBIR")
 
-                        // Vehiculos
                         .requestMatchers(HttpMethod.GET, "/api/v1/vehiculos/**").hasAuthority("VEHICULO_LEER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/vehiculos").hasAuthority("VEHICULO_ESCRIBIR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/vehiculos/**").hasAuthority("VEHICULO_ESCRIBIR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/vehiculos/**").hasAuthority("VEHICULO_ESCRIBIR")
 
-                        // Ordenes de Servicio
                         .requestMatchers(HttpMethod.POST, "/api/v1/ordenes").hasAuthority("ORDEN_REGISTRAR")
                         .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/**").hasAuthority("ORDEN_LEER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/ordenes/*/anular").hasAuthority("ORDEN_ANULAR")
 
-                        // Reportes
                         .requestMatchers(HttpMethod.GET, "/api/v1/reportes/**").hasAuthority("REPORTE_VER")
 
-                        // Cualquier otra peticion requiere autenticacion
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

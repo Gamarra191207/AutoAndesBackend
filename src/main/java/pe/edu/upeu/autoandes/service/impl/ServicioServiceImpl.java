@@ -96,7 +96,6 @@ public class ServicioServiceImpl implements ServicioService {
         Servicio servicio = servicioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Servicio no encontrado con id: " + id));
 
-        // RN-01: Un servicio usado en alguna orden no se elimina fisicamente
         if (detalleOrdenRepository.existsByServicioId(id)) {
             log.warn("RN-01 rechazada: Intento de eliminar fisicamente el servicio ID={}, pero ya esta en uso en ordenes", id);
             throw new ReglaNegocioException("El servicio ya ha sido utilizado en órdenes y no se puede eliminar físicamente. Use PATCH /api/v1/servicios/" + id + "/estado para darlo de baja.");

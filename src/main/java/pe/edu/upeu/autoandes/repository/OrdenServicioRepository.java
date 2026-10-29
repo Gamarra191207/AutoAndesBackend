@@ -16,10 +16,8 @@ public interface OrdenServicioRepository extends JpaRepository<OrdenServicio, Lo
 
     boolean existsByVehiculoId(Long vehiculoId);
 
-    // RN-04: Última orden REGISTRADA del vehículo para validar kilometraje
     Optional<OrdenServicio> findTopByVehiculoIdAndEstadoOrderByFechaDescIdDesc(Long vehiculoId, String estado);
 
-    // Consulta con filtros combinados y opcionales
     @Query("SELECT o FROM OrdenServicio o JOIN FETCH o.vehiculo v JOIN FETCH v.cliente c " +
            "WHERE (:placa IS NULL OR UPPER(v.placa) LIKE UPPER(CONCAT('%', :placa, '%'))) " +
            "  AND (:estado IS NULL OR o.estado = :estado) " +
@@ -33,7 +31,6 @@ public interface OrdenServicioRepository extends JpaRepository<OrdenServicio, Lo
             @Param("hasta") LocalDateTime hasta
     );
 
-    // Reporte agregado JPQL excluyendo órdenes ANULADAS
     @Query("SELECT new pe.edu.upeu.autoandes.dto.reporte.IngresoPorServicioDTO(" +
            "  s.codigo, " +
            "  s.nombre, " +

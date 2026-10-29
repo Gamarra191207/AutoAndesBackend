@@ -40,11 +40,9 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
 
     @Override
     public OrdenServicioResponseDTO registrarOrden(OrdenServicioRequestDTO dto, String usuarioRegistro) {
-        // Vehiculo debe existir
         Vehiculo vehiculo = vehiculoRepository.findById(dto.getVehiculoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Vehículo no encontrado con id: " + dto.getVehiculoId()));
 
-        // RN-03: Validar que no se repita el mismo servicio en multiples lineas (400)
         Set<Long> serviciosVistos = new HashSet<>();
         for (DetalleOrdenRequestDTO d : dto.getDetalles()) {
             if (!serviciosVistos.add(d.getServicioId())) {
@@ -53,7 +51,6 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
             }
         }
 
-        // RN-04: El kilometraje no puede ser menor que el de la ultima orden REGISTRADA del mismo vehiculo (409)
         Optional<OrdenServicio> ultimaOrdenOpt = ordenServicioRepository
                 .findTopByVehiculoIdAndEstadoOrderByFechaDescIdDesc(vehiculo.getId(), "REGISTRADA");
 
@@ -69,7 +66,6 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
             }
         }
 
-        // Generar correlativo OS-000001
         Long maxId = ordenServicioRepository.obtenerMaxId();
         long siguiente = (maxId != null ? maxId : 0) + 1;
         String numeroCorrelativo = String.format("OS-%06d", siguiente);
@@ -91,7 +87,6 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
             Servicio servicio = servicioRepository.findById(detDto.getServicioId())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Servicio no encontrado con id: " + detDto.getServicioId()));
 
-            // RN-03: Todos los servicios deben estar activos (409)
             if (Boolean.FALSE.equals(servicio.getActivo())) {
                 log.warn("RN-03 rechazada: Servicio '{}' ({}) inactivo", servicio.getNombre(), servicio.getCodigo());
                 throw new ReglaNegocioException(
@@ -147,13 +142,11 @@ public class OrdenServicioServiceImpl implements OrdenServicioService {
         OrdenServicio orden = ordenServicioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Orden de servicio no encontrada con id: " + id));
 
-        // RN-05: Solo se anula una orden REGISTRADA
         if (!"REGISTRADA".equalsIgnoreCase(orden.getEstado())) {
             log.warn("RN-05 rechazada: Intento de anular orden ID={} que ya esta en estado {}", id, orden.getEstado());
             throw new ReglaNegocioException("Solo se puede anular una orden que se encuentre en estado REGISTRADA.");
         }
 
-        // RN-05: y en el mismo dia de su registro
         LocalDate hoy = LocalDate.now();
         LocalDate fechaRegistro = orden.getFecha().toLocalDate();
         if (!fechaRegistro.isEqual(hoy)) {

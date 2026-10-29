@@ -35,11 +35,9 @@ public class UsuarioDetailsService implements UserDetailsService {
         Set<Permiso> permisos = PermisosPorRol.obtenerPermisosCombinados(rolesNombres);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // Agregar permisos como authorities
         for (Permiso p : permisos) {
             authorities.add(new SimpleGrantedAuthority(p.name()));
         }
-        // Agregar roles con prefijo ROLE_
         for (String r : rolesNombres) {
             String roleName = r.startsWith("ROLE_") ? r : "ROLE_" + r;
             authorities.add(new SimpleGrantedAuthority(roleName));

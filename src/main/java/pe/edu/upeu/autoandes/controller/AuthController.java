@@ -45,7 +45,6 @@ public class AuthController {
         String usernameLimpio = request.getUsername().trim();
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsernameIgnoreCase(usernameLimpio);
 
-        // Mismo mensaje 401 para usuario inexistente, contrasena incorrecta o cuenta inactiva
         if (usuarioOpt.isEmpty() ||
             !passwordEncoder.matches(request.getPassword(), usuarioOpt.get().getPassword()) ||
             Boolean.FALSE.equals(usuarioOpt.get().getActivo())) {
