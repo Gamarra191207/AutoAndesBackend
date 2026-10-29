@@ -7,11 +7,9 @@ public final class PermisosPorRol {
     private static final Map<String, Set<Permiso>> MATRIZ = new HashMap<>();
 
     static {
-        // ADMIN: todos los permisos
         MATRIZ.put("ROLE_ADMIN", EnumSet.allOf(Permiso.class));
         MATRIZ.put("ADMIN", EnumSet.allOf(Permiso.class));
 
-        // ASESOR: registra vehiculos y ordenes, consulta servicios y ordenes
         Set<Permiso> asesor = EnumSet.of(
                 Permiso.SERVICIO_LEER,
                 Permiso.VEHICULO_LEER,
@@ -22,7 +20,6 @@ public final class PermisosPorRol {
         MATRIZ.put("ROLE_ASESOR", asesor);
         MATRIZ.put("ASESOR", asesor);
 
-        // JEFE_TALLER: mantiene catalogo de servicios, anula ordenes y consulta reportes
         Set<Permiso> jefeTaller = EnumSet.of(
                 Permiso.SERVICIO_LEER,
                 Permiso.SERVICIO_ESCRIBIR,
